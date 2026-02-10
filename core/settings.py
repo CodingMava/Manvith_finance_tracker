@@ -110,7 +110,7 @@ DATABASES = {
 }
 
 # Use PostgreSQL if DATABASE_URL is set (Production/Render)
-if os.environ.get('DATABASE_URL'):
+if os.environ.get('DATABASE_URL') and not DEBUG:
     DATABASES['default'] = dj_database_url.config(conn_max_age=600, ssl_require=True)
 
 # Password validation (simple for demo)
