@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.google',
 ]
 
-SITE_ID = 2
+SITE_ID = int(os.environ.get('SITE_ID', 1))
 
 # Allauth Provider Settings
 SOCIALACCOUNT_PROVIDERS = {
