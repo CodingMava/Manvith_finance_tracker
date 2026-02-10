@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card">
+    <h2>Delete Category?</h2>
+    <p>Are you sure you want to delete the category: <strong>{{ category.name }}</strong>?</p>
+    <div class="alert alert-error">
+        Warning: Deleting a category might affect existing transactions linked to it!
+    </div>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn" style="background-color: #cf6679;">Confirm Delete</button>
+        <a href="{% url 'category-list' %}" class="btn" style="background-color: #333; margin-left: 0.5rem;">Cancel</a>
+    </form>
+</div>
+{% endblock %}

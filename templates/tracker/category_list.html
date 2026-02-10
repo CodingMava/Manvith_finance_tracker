@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card">
+    <h2>Categories</h2>
+
+    <div style="margin-bottom: 2rem; border-bottom: 1px solid #333; padding-bottom: 1rem;">
+        <h3>Add New Category</h3>
+        <form method="post" style="display: flex; gap: 1rem; align-items: flex-end;">
+            {% csrf_token %}
+            <div>
+                <label for="{{ form.name.id_for_label }}">Name:</label>
+                {{ form.name }}
+            </div>
+            <div>
+                <label for="{{ form.type.id_for_label }}">Type:</label>
+                {{ form.type }}
+            </div>
+            <button type="submit" class="btn">Add</button>
+        </form>
+    </div>
+
+    <h3>Your Categories</h3>
+    {% if categories %}
+    <ul>
+        {% for c in categories %}
+        <li
+            style="margin-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: center; background-color: #2d2d2d; padding: 0.5rem; border-radius: 4px;">
+            <span><strong>{{ c.name }}</strong> ({{ c.type|title }})</span>
+            <a href="{% url 'category-delete' c.pk %}" style="color: #cf6679;">Delete</a>
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p>No categories found.</p>
+    {% endif %}
+</div>
+{% endblock %}

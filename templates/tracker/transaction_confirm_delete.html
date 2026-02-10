@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card">
+    <h2>Delete Transaction?</h2>
+    <p>Are you sure you want to delete the transaction: <strong>{{ transaction }}</strong>?</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn" style="background-color: #cf6679;">Confirm Delete</button>
+        <a href="{% url 'transaction-list' %}" class="btn"
+            style="background-color: #333; margin-left: 0.5rem;">Cancel</a>
+    </form>
+</div>
+{% endblock %}

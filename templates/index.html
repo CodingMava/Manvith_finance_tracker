@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    .dashboard-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        margin-bottom: 3rem;
+    }
+
+    .stats-card {
+        padding: 2rem;
+    }
+
+    .stat-label {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .stat-value {
+        font-size: 2rem;
+        margin: 0.5rem 0;
+    }
+
+    .stats-sub-grid {
+        margin-top: 1.5rem;
+        display: flex;
+        gap: 0.8rem;
+        flex-wrap: wrap;
+    }
+
+    .stat-sub-item {
+        flex: 1;
+        min-width: 80px;
+    }
+
+    .stat-sub-label {
+        margin: 0;
+        font-size: 0.75rem;
+        color: var(--text-muted);
+    }
+
+    .stat-sub-value {
+        margin: 0;
+        font-weight: 600;
+        font-size: 0.95rem;
+    }
+</style>
+
+<div class="dashboard-header">
+    <div>
+        <h1 style="margin:0; font-size: 2.5rem; font-weight: 800;">Overview</h1>
+        <p style="color: var(--text-muted); margin: 0.5rem 0 0 0;">
+            Welcome back, {{ user.username }}. Here's your financial heartbeat.
+        </p>
+    </div>
+    <div style="display: flex; gap: 1rem;">
+        <a href="{% url 'transaction-create' %}" class="btn">Add Transaction</a>
+    </div>
+</div>
+
+<div class="stats-grid"
+    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-bottom: 3rem;">
+    {% for stat in savings_data %}
+    <div class="card stats-card">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <div>
+                <span class="stat-label">Income vs Expense ({{ stat.currency }})</span>
+                {% if stat.net_savings >= 0 %}
+                <h2 class="stat-value text-success">{{ stat.currency }} {{ stat.net_savings|floatformat:2 }}</h2>
+                {% else %}
+                <h2 class="stat-value text-error">{{ stat.currency }} {{ stat.net_savings|floatformat:2 }}</h2>
+                {% endif %}
+            </div>
+            <div
+                style="background: rgba(255,255,255,0.03); padding: 0.8rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+                <span style="font-size: 1.2rem;">💰</span>
+            </div>
+        </div>
+
+        <div class="stats-sub-grid">
+            <div class="stat-sub-item">
+                <p class="stat-sub-label">Income</p>
+                <p class="stat-sub-value" style="color: var(--accent-secondary);">{{ stat.income|floatformat:2 }}</p>
+            </div>
+            <div class="stat-sub-item">
+                <p class="stat-sub-label">Expense</p>
+                <p class="stat-sub-value" style="color: var(--accent-error);">{{ stat.expense|floatformat:2 }}</p>
+            </div>
+            <div class="stat-sub-item">
+                <p class="stat-sub-label">Net Savings</p>
+                <p class="stat-sub-value" style="color: #fbbf24;">{{ stat.net_savings|floatformat:2 }}</p>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="card" style="grid-column: 1/-1; text-align: center; padding: 4rem;">
+        <h2 style="color: var(--text-muted);">No transactions yet.</h2>
+        <p>Start tracking by adding your first income or expense.</p>
+        <a href="{% url 'transaction-create' %}" class="btn" style="margin-top: 1rem;">Get Started</a>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="card" style="padding: 2.5rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <h2 style="margin:0;">Performance Breakdown</h2>
+        <div
+            style="padding: 0.5rem 1rem; border-radius: 20px; background: rgba(255,255,255,0.03); font-size: 0.8rem; color: var(--text-muted);">
+            Live Analysis</div>
+    </div>
+    <div style="height: 400px; position: relative;">
+        <canvas id="savingsChart"></canvas>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{{ savings_json|json_script:"savings-data" }}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const ctx = document.getElementById('savingsChart').getContext('2d');
+        const rawData = JSON.parse(document.getElementById('savings-data').textContent);
+        const data = typeof rawData === 'string' ? JSON.parse(rawData) : rawData;
+
+        const labels = data.map(i => i.currency);
+        const incomeData = data.map(i => i.income);
+        const expenseData = data.map(i => i.expense);
+        const savingsData = data.map(i => i.net_savings);
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Income',
+                        data: incomeData,
+                        backgroundColor: 'rgba(3, 218, 198, 0.4)',
+                        borderColor: 'rgba(3, 218, 198, 1)',
+                        borderWidth: 2,
+                        borderRadius: 8
+                    },
+                    {
+                        label: 'Expenses',
+                        data: expenseData,
+                        backgroundColor: 'rgba(207, 102, 121, 0.4)',
+                        borderColor: 'rgba(207, 102, 121, 1)',
+                        borderWidth: 2,
+                        borderRadius: 8
+                    },
+                    {
+                        label: 'Net Savings',
+                        data: savingsData,
+                        backgroundColor: 'rgba(251, 191, 36, 0.4)',
+                        borderColor: 'rgba(251, 191, 36, 1)',
+                        borderWidth: 2,
+                        borderRadius: 8
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'top', labels: { color: '#e0e0e0', font: { family: 'Outfit', size: 12 } } },
+                    tooltip: { backgroundColor: '#1e1e1e', titleFont: { family: 'Outfit' }, bodyFont: { family: 'Inter' } }
+                },
+                scales: {
+                    x: { grid: { display: false }, ticks: { color: '#656565' } },
+                    y: {
+                        grid: { color: 'rgba(255,255,255,0.05)' },
+                        ticks: { color: '#656565', callback: (val) => val.toLocaleString() }
+                    }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

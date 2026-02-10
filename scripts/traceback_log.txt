@@ -1,0 +1,97 @@
+Traceback (most recent call last):
+  File "C:\Users\11231\OneDrive\Desktop\finance1\debug_login.py", line 25, in <module>
+    resp = client.post(reverse('login'), {
+                       ~~~~~~~^^^^^^^^^
+  File "C:\Users\11231\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\urls\base.py", line 98, in reverse
+    resolved_url = resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+  File "C:\Users\11231\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\urls\resolvers.py", line 760, in _reverse_with_prefix
+    self._populate()
+    ~~~~~~~~~~~~~~^^
+  File "C:\Users\11231\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\urls\resolvers.py", line 558, in _populate
+    for url_pattern in reversed(self.url_patterns):
+                                ^^^^^^^^^^^^^^^^^
+  File "C:\Users\11231\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\utils\functional.py", line 47, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+                                         ~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\11231\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\urls\resolvers.py", line 729, in url_patterns
+    patterns = getattr(self.urlconf_module, "urlpatterns", self.urlconf_module)
+                       ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\11231\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\utils\functional.py", line 47, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+                                         ~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\11231\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\urls\resolvers.py", line 722, in urlconf_module
+    return import_module(self.urlconf_name)
+  File "C:\Users\11231\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py", line 88, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 1026, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "C:\Users\11231\OneDrive\Desktop\finance1\core\urls.py", line 10, in <module>
+    path('accounts/', include('allauth.urls')),
+                      ~~~~~~~^^^^^^^^^^^^^^^^
+  File "C:\Users\11231\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\urls\conf.py", line 39, in include
+    urlconf_module = import_module(urlconf_module)
+  File "C:\Users\11231\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py", line 88, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 1026, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "C:\Users\11231\AppData\Local\Programs\Python\Python313\Lib\site-packages\allauth\urls.py", line 34, in <module>
+    urlpatterns += [path("", include("allauth.account.urls"))]
+                             ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\11231\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\urls\conf.py", line 39, in include
+    urlconf_module = import_module(urlconf_module)
+  File "C:\Users\11231\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py", line 88, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 1026, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "C:\Users\11231\AppData\Local\Programs\Python\Python313\Lib\site-packages\allauth\account\urls.py", line 7, in <module>
+    from . import views
+  File "C:\Users\11231\AppData\Local\Programs\Python\Python313\Lib\site-packages\allauth\account\views.py", line 21, in <module>
+    from allauth.account.forms import (
+    ...<16 lines>...
+    )
+  File "C:\Users\11231\AppData\Local\Programs\Python\Python313\Lib\site-packages\allauth\account\forms.py", line 15, in <module>
+    from allauth.account.internal import flows
+  File "C:\Users\11231\AppData\Local\Programs\Python\Python313\Lib\site-packages\allauth\account\internal\__init__.py", line 1, in <module>
+    from allauth.account.internal import flows
+  File "C:\Users\11231\AppData\Local\Programs\Python\Python313\Lib\site-packages\allauth\account\internal\flows\__init__.py", line 1, in <module>
+    from allauth.account.internal.flows import (
+    ...<12 lines>...
+    )
+  File "C:\Users\11231\AppData\Local\Programs\Python\Python313\Lib\site-packages\allauth\account\internal\flows\email_verification.py", line 10, in <module>
+    from allauth.account.internal.flows.manage_email import (
+    ...<3 lines>...
+    )
+  File "C:\Users\11231\AppData\Local\Programs\Python\Python313\Lib\site-packages\allauth\account\internal\flows\manage_email.py", line 9, in <module>
+    from allauth.account.internal.flows.reauthentication import (
+        raise_if_reauthentication_required,
+    )
+  File "C:\Users\11231\AppData\Local\Programs\Python\Python313\Lib\site-packages\allauth\account\internal\flows\reauthentication.py", line 11, in <module>
+    from allauth.account.authentication import get_authentication_records
+  File "C:\Users\11231\AppData\Local\Programs\Python\Python313\Lib\site-packages\allauth\account\authentication.py", line 1, in <module>
+    from allauth.account.internal.flows.login import AUTHENTICATION_METHODS_SESSION_KEY
+  File "C:\Users\11231\AppData\Local\Programs\Python\Python313\Lib\site-packages\allauth\account\internal\flows\login.py", line 11, in <module>
+    from allauth.account.models import Login
+  File "C:\Users\11231\AppData\Local\Programs\Python\Python313\Lib\site-packages\allauth\account\models.py", line 20, in <module>
+    class EmailAddress(models.Model):
+    ...<99 lines>...
+                user_email(self.user, alt_email, commit=True)
+  File "C:\Users\11231\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\db\models\base.py", line 136, in __new__
+    raise RuntimeError(
+    ...<3 lines>...
+    )
+RuntimeError: Model class allauth.account.models.EmailAddress doesn't declare an explicit app_label and isn't in an application in INSTALLED_APPS.

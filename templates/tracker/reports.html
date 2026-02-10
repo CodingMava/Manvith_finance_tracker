@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="dashboard-header" style="margin-bottom: 3rem;">
+    <h1 style="font-size: 2.5rem; font-weight: 800;">Financial Reports</h1>
+    <p style="color: var(--text-muted);">Deep dive into your spending and income patterns.</p>
+</div>
+
+<div
+    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 2rem; margin-bottom: 3rem;">
+    <!-- Pie Chart Card -->
+    <div class="card" style="padding: 2.5rem;">
+        <h2 style="margin-bottom: 1.5rem; font-size: 1.25rem;">Spending by Category</h2>
+        <div style="height: 300px; position: relative;">
+            <canvas id="categoryPieChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Trend Line Card -->
+    <div class="card" style="padding: 2.5rem;">
+        <h2 style="margin-bottom: 1.5rem; font-size: 1.25rem;">Monthly Trends</h2>
+        <div style="height: 300px; position: relative;">
+            <canvas id="trendLineChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<div class="card" style="padding: 2.5rem;">
+    <h2 style="margin-bottom: 1.5rem;">Detailed Monthly Breakdown</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Month</th>
+                <th>Currency</th>
+                <th>Income</th>
+                <th>Expense</th>
+                <th>Net Savings</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for report in reports %}
+            <tr>
+                <td style="font-weight: 600;">{{ report.month|date:"F Y" }}</td>
+                <td>{{ report.currency }}</td>
+                <td style="color: var(--accent-secondary);">{{ report.income|default:0|floatformat:2 }}</td>
+                <td style="color: var(--accent-error);">{{ report.expense|default:0|floatformat:2 }}</td>
+                {% if report.net >= 0 %}
+                <td style="font-weight: 700;" class="text-success">{{ report.net|floatformat:2 }}</td>
+                {% else %}
+                <td style="font-weight: 700;" class="text-error">{{ report.net|floatformat:2 }}</td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{{ report_json|json_script:"report-data" }}
+{{ category_json|json_script:"category-data" }}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // --- Category Pie Chart ---
+        const catCtx = document.getElementById('categoryPieChart').getContext('2d');
+        const catDataRaw = JSON.parse(document.getElementById('category-data').textContent);
+        const catData = typeof catDataRaw === 'string' ? JSON.parse(catDataRaw) : catDataRaw;
+
+        new Chart(catCtx, {
+            type: 'doughnut',
+            data: {
+                labels: catData.map(i => i.name),
+                datasets: [{
+                    data: catData.map(i => i.total),
+                    backgroundColor: [
+                        'hsla(270, 70%, 70%, 0.6)',
+                        'hsla(170, 70%, 60%, 0.6)',
+                        'hsla(10, 70%, 65%, 0.6)',
+                        'hsla(45, 70%, 60%, 0.6)',
+                        'hsla(190, 70%, 65%, 0.6)'
+                    ],
+                    borderColor: 'rgba(0,0,0,0.1)',
+                    borderWidth: 2,
+                    hoverOffset: 20
+                }]
+            },
+            options: {
+                cutout: '70%',
+                plugins: {
+                    legend: { position: 'right', labels: { color: '#e0e0e0', font: { family: 'Inter' } } }
+                }
+            }
+        });
+
+        // --- Monthly Trend Line ---
+        const trendCtx = document.getElementById('trendLineChart').getContext('2d');
+        const trendDataRaw = JSON.parse(document.getElementById('report-data').textContent);
+        const trendData = typeof trendDataRaw === 'string' ? JSON.parse(trendDataRaw) : trendDataRaw;
+
+        new Chart(trendCtx, {
+            type: 'line',
+            data: {
+                labels: trendData.map(i => i.month_label),
+                datasets: [
+                    {
+                        label: 'Income',
+                        data: trendData.map(i => i.income),
+                        borderColor: 'hsla(170, 70%, 60%, 1)',
+                        backgroundColor: 'hsla(170, 70%, 60%, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    },
+                    {
+                        label: 'Expenses',
+                        data: trendData.map(i => i.expense),
+                        borderColor: 'hsla(350, 70%, 65%, 1)',
+                        backgroundColor: 'hsla(350, 70%, 65%, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    },
+                    {
+                        label: 'Net Savings',
+                        data: trendData.map(i => i.net),
+                        borderColor: 'hsla(45, 70%, 60%, 1)',
+                        backgroundColor: 'hsla(45, 70%, 60%, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }
+                ]
+            },
+            options: {
+                plugins: {
+                    legend: { display: true, labels: { color: '#e0e0e0' } }
+                },
+                scales: {
+                    x: { grid: { display: false }, ticks: { color: '#656565' } },
+                    y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#656565' } }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

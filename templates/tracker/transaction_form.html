@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card" style="max-width: 600px; margin: 0 auto;">
+    <h1 style="margin-bottom: 2rem; font-size: 2rem;">{{ title }}</h1>
+    <form method="post" enctype="multipart/form-data" class="premium-form">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label>Date</label>
+            {{ form.date }}
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-group">
+                <label>Amount</label>
+                {{ form.amount }}
+            </div>
+            <div class="form-group">
+                <label>Currency</label>
+                {{ form.currency }}
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Transaction Type</label>
+            {{ form.transaction_type }}
+        </div>
+
+        <div class="form-group">
+            <label>Category Label (e.g., Food, Rent)</label>
+            {{ form.category_name }}
+        </div>
+
+        <div class="form-group">
+            <label>Notes / Description</label>
+            {{ form.description }}
+        </div>
+
+        <div class="form-group">
+            <label>Attach Receipt</label>
+            {{ form.receipt }}
+        </div>
+
+        <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+            <button type="submit" class="btn" style="flex: 2;">Save Transaction</button>
+            <a href="{% url 'transaction-list' %}" class="btn btn-secondary" style="flex: 1;">Cancel</a>
+        </div>
+    </form>
+</div>
+
+<style>
+    /* Styling for nested form elements */
+    .premium-form input,
+    .premium-form select,
+    .premium-form textarea {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: var(--text-main);
+        padding: 1rem;
+        border-radius: 12px;
+        width: 100%;
+        transition: var(--transition-smooth);
+    }
+
+    .premium-form input:focus {
+        border-color: var(--accent-primary);
+        box-shadow: 0 0 15px var(--border-glow);
+    }
+</style>
+{% endblock %}

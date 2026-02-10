@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinanceFlow — Premium Tracker</title>
+    <!-- Premium Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Inter:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            /* Premium Color Palette (HSL for harmony) */
+            --bg-deep: hsl(240, 10%, 4%);
+            --glass-bg: hsla(240, 6%, 10%, 0.7);
+            --card-bg: hsla(240, 6%, 14%, 0.8);
+            --text-main: hsl(0, 0%, 95%);
+            --text-muted: hsl(0, 0%, 65%);
+            --accent-primary: hsl(270, 70%, 70%);
+            /* Soft Purple */
+            --accent-secondary: hsl(170, 70%, 60%);
+            /* Mint */
+            --accent-error: hsl(350, 70%, 65%);
+            --border-glow: hsla(270, 70%, 70%, 0.2);
+            --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg-deep);
+            background-image:
+                radial-gradient(at 0% 0%, hsla(270, 70%, 15%, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, hsla(170, 70%, 10%, 0.1) 0px, transparent 50%);
+            color: var(--text-main);
+            margin: 0;
+            min-height: 100vh;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Glassmorphism Header */
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar .brand {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            margin-left: 1.5rem;
+            font-weight: 500;
+            transition: var(--transition-smooth);
+            font-size: 0.95rem;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent-primary);
+            text-shadow: 0 0 15px var(--border-glow);
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 3rem auto;
+            padding: 0 1.5rem;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Glass Cards */
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            margin-bottom: 2rem;
+            transition: var(--transition-smooth);
+        }
+
+        .card:hover {
+            border-color: rgba(255, 255, 255, 0.08);
+            transform: translateY(-2px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+        }
+
+        h1,
+        h2,
+        h3 {
+            font-weight: 700;
+            margin-top: 0;
+            letter-spacing: -0.3px;
+        }
+
+        /* Buttons & Inputs */
+        .btn {
+            background: linear-gradient(135deg, var(--accent-primary), #a855f7);
+            color: #fff;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: var(--transition-smooth);
+            display: inline-block;
+            text-decoration: none;
+            text-align: center;
+        }
+
+        .btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 25px rgba(187, 134, 252, 0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-main);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        input,
+        select,
+        textarea {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: var(--text-main);
+            padding: 1rem;
+            border-radius: 12px;
+            width: 100%;
+            margin-bottom: 1.5rem;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+            transition: var(--transition-smooth);
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            background: rgba(255, 255, 255, 0.05);
+            box-shadow: 0 0 15px var(--border-glow);
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 10px;
+        }
+
+        th {
+            color: var(--text-muted);
+            font-weight: 500;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+            padding: 1rem;
+        }
+
+        td {
+            background: rgba(255, 255, 255, 0.02);
+            padding: 1.2rem 1rem;
+        }
+
+        td:first-child {
+            border-radius: 12px 0 0 12px;
+        }
+
+        td:last-child {
+            border-radius: 0 12px 12px 0;
+        }
+
+        .alert {
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            font-weight: 500;
+            animation: slideIn 0.4s ease-out;
+        }
+
+        .alert-error {
+            background: rgba(207, 102, 121, 0.15);
+            color: var(--accent-error);
+            border: 1px solid rgba(207, 102, 121, 0.2);
+        }
+
+        .alert-success {
+            background: rgba(3, 218, 198, 0.1);
+            color: var(--accent-secondary);
+            border: 1px solid rgba(3, 218, 198, 0.2);
+        }
+
+        .text-success {
+            color: var(--accent-secondary) !important;
+        }
+
+        .text-error {
+            color: var(--accent-error) !important;
+        }
+
+        .text-muted-premium {
+            color: var(--text-muted) !important;
+        }
+
+        .bg-success {
+            background: var(--accent-secondary) !important;
+        }
+
+        .bg-warning {
+            background: #fbbf24 !important;
+        }
+
+        .bg-error {
+            background: var(--accent-error) !important;
+        }
+
+        /* Global Form Enhancements */
+        .premium-form .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .premium-form label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 0.6rem;
+            letter-spacing: 0.3px;
+        }
+
+        .premium-form input,
+        .premium-form select,
+        .premium-form textarea {
+            background: rgba(255, 255, 255, 0.05) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            color: var(--text-main) !important;
+            padding: 0.8rem 1rem !important;
+            border-radius: 10px !important;
+            width: 100%;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            transition: var(--transition-smooth);
+        }
+
+        .premium-form input:focus,
+        .premium-form select:focus,
+        .premium-form textarea:focus {
+            outline: none;
+            border-color: var(--accent-primary) !important;
+            background: rgba(255, 255, 255, 0.08) !important;
+            box-shadow: 0 0 15px var(--border-glow);
+        }
+
+        /* Essential for readable dropdowns in dark mode */
+        select option {
+            background-color: #1a1a1c !important;
+            color: #ffffff !important;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar">
+        <a href="/" class="brand">FinanceFlow</a>
+        <div class="nav-links">
+            {% if user.is_authenticated %}
+            <a href="{% url 'transaction-list' %}">History</a>
+            <a href="{% url 'budget-list' %}">Budgets</a>
+            <a href="{% url 'reports' %}">Report Card</a>
+            <a href="{% url 'profile' %}" style="color: var(--accent-primary)">{{ user.username }}</a>
+            <a href="{% url 'logout' %}">Sign Out</a>
+            {% else %}
+            <a href="{% url 'login' %}">Login</a>
+            <a href="{% url 'register' %}" class="btn" style="padding: 0.5rem 1rem; margin-left: 1rem;">Get Started</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <div class="container">
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </div>
+
+    <!-- Micro-interaction Scripts -->
+    <script>
+        document.querySelectorAll('.btn').forEach(btn => {
+            btn.addEventListener('mousemove', (e) => {
+                const rect = btn.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                btn.style.setProperty('--mouse-x', `${x}px`);
+                btn.style.setProperty('--mouse-y', `${y}px`);
+            });
+        });
+    </script>
+</body>
+
+</html>
