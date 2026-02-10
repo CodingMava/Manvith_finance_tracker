@@ -228,11 +228,19 @@ def check_budget_exceeded(user, category):
                 date__month=now.month
             ).aggregate(Sum('amount'))['amount__sum'] or 0
             
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.info(f"Checking budget for {user.username} - {category.name} ({budget.currency}). Spent: {total_expenses}, Limit: {budget.amount}")
+            
             if total_expenses > budget.amount:
                 subject = f"Budget Exceeded Alert: {category.name}"
                 message = f"Warning! You have exceeded your budget for {category.name} ({budget.currency}).\n\nLimit: {budget.amount}\nSpent: {total_expenses}"
                 if user.email:
+                    logger.info(f"Attempting to send email to {user.email}")
                     send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email])
+                    logger.info("Email sent successfully (at least attempted by Django)")
+                else:
+                    logger.warning(f"User {user.username} has no email address set!")
     except Exception as e:
         import logging
         logger = logging.getLogger(__name__)
