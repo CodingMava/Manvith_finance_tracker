@@ -41,12 +41,25 @@ def transaction_saved(sender, instance, created, **kwargs):
             if user.email:
                 subject = f"Budget Exceeded Alert: {category.name}"
                 message = f"Warning! You have exceeded your budget for {category.name} ({currency}).\n\nLimit: {budget.amount}\nSpent: {total_expenses}"
-                try:
-                    logger.info(f"Budget threshold hit. Attempting to send email from {settings.DEFAULT_FROM_EMAIL} to {user.email}")
-                    send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email], fail_silently=False)
-                    logger.info(f"SIGNAL SUCCESS: Budget alert email sent to {user.email}")
-                    print(f"SIGNAL: Email sent to {user.email}")
-                except Exception as e:
-                    logger.error(f"Failed to send budget email in signal: {e}", exc_info=True)
+                
+                def send_email_async(sub, msg, from_mail, to_mail):
+                    import socket
+                    # Set a timeout for the socket connection to avoid hanging the thread
+                    socket.setdefaulttimeout(10)
+                    try:
+                        logger.info(f"Background thread: Attempting to send budget email to {to_mail}")
+                        send_mail(sub, msg, from_mail, [to_mail], fail_silently=False)
+                        logger.info(f"Background thread: Email sent successfully to {to_mail}")
+                    except Exception as e:
+                        logger.error(f"Background thread: Failed to send budget email: {e}")
+
+                import threading
+                email_thread = threading.Thread(
+                    target=send_email_async,
+                    args=(subject, message, settings.DEFAULT_FROM_EMAIL, user.email)
+                )
+                email_thread.daemon = True
+                email_thread.start()
+                logger.info(f"Budget threshold hit. Started background thread for email to {user.email}")
             else:
                 logger.warning(f"User {user.username} has no email address set for budget signal.")

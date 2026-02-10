@@ -237,6 +237,8 @@ def debug_email_view(request):
     result += f"- Email Host: {settings.EMAIL_HOST}\n\n"
 
     try:
+        import socket
+        socket.setdefaulttimeout(15) # 15 second timeout for diagnostics
         from django.core.mail import send_mail
         send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [recipient], fail_silently=False)
         result += f"SUCCESS: Diagnostic email sent to {recipient}!"
