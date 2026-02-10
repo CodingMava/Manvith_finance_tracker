@@ -34,7 +34,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'core.apps.CoreConfig',
-    'apps.tracker',
+    'apps.tracker.apps.TrackerConfig',
     'django.contrib.sites',
     'allauth',
     'allauth.account',
