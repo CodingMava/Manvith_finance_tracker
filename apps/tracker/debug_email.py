@@ -13,10 +13,10 @@ if os.path.exists(env_path):
                 key, val = line.strip().split('=', 1)
                 os.environ.setdefault(key, val)
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings')
 import sys
 from pathlib import Path
-sys.path.append(str(Path(__file__).resolve().parent.parent))
+sys.path.append(str(Path(__file__).resolve().parent.parent.parent))
 django.setup()
 
 from django.core.mail import send_mail

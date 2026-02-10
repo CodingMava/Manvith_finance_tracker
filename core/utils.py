@@ -52,9 +52,19 @@ def check_and_notify_budget(user, category, currency="USD"):
     )
 
     if spent > budget.amount:
-        send_mail(
-            "Budget exceeded",
-            f"You exceeded {category.name}",
-            settings.DEFAULT_FROM_EMAIL,
-            [user.email],
-        )
+        import logging
+        logger = logging.getLogger(__name__)
+        try:
+            if user.email:
+                logger.info(f"Budget exceeded for {user.username} - {category.name}. Sending email to {user.email}")
+                send_mail(
+                    "Budget exceeded",
+                    f"You exceeded {category.name} ({currency}).\nSpent: {spent}\nLimit: {budget.amount}",
+                    settings.DEFAULT_FROM_EMAIL,
+                    [user.email],
+                    fail_silently=False,
+                )
+            else:
+                logger.warning(f"Budget exceeded for {user.username} but no email set.")
+        except Exception as e:
+            logger.error(f"Failed to send budget notification to {user.email}: {e}", exc_info=True)

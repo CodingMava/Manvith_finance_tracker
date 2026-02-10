@@ -3,7 +3,6 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from .forms import RegistrationForm
 from django.contrib.auth.forms import AuthenticationForm
-from .utils import check_and_notify_budget
 from apps.tracker.models import Transaction
 from django.db.models import Sum
 import json
