@@ -1,3 +1,4 @@
+import os
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.db.models import Sum
@@ -209,6 +210,7 @@ def report_view(request):
         'report_json': json.dumps(sorted_reports, default=str),
         'category_json': json.dumps(category_list_data),
     }
+    return render(request, 'tracker/reports.html', context)
 
 from django.http import HttpResponse
 
