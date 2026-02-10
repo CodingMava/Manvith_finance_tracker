@@ -234,4 +234,6 @@ def check_budget_exceeded(user, category):
                 if user.email:
                     send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email])
     except Exception as e:
-        print(f"Error in check_budget_exceeded: {e}")
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.error(f"Error in check_budget_exceeded for user {user.username}, category {category.name}: {e}", exc_info=True)

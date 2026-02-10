@@ -14,6 +14,10 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'dev-secret-key')
 DEBUG = os.environ.get('DJANGO_DEBUG', 'False') == 'True'
 ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS', 'localhost,127.0.0.1,.onrender.com').split(',')
 
+# OAuth & Account Production Defaults
+SOCIALACCOUNT_LOGIN_ON_GET = True
+ACCOUNT_DEFAULT_HTTP_PROTOCOL = 'https'
+
 # CSRF Trusted Origins for Render
 RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
 if RENDER_EXTERNAL_HOSTNAME:
@@ -134,14 +138,14 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Email: Console by default, SMTP if configured
 # Email: Console by default, SMTP if configured
-# Email: SMTP backend for live emails
+# Email: Gmail SMTP backend
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = os.environ.get('EMAIL_HOST', 'smtp.sendgrid.net')
+EMAIL_HOST = os.environ.get('EMAIL_HOST', 'smtp.gmail.com')
 EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 587))
 EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'True') == 'True'
-EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', 'apikey')
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
-DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'noreply@finance1.app')
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', EMAIL_HOST_USER)
 
 # Account Adapter for Allauth (optional customization)
 ACCOUNT_EMAIL_VERIFICATION = 'none'  # Simplified for now
