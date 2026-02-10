@@ -98,22 +98,16 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # Database
 import dj_database_url
 
-# Prefer DATABASE_URL when provided. For local development (DEBUG=True) fall back to SQLite.
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
+
+# Use PostgreSQL if DATABASE_URL is set (Production/Render)
 if os.environ.get('DATABASE_URL'):
-    DATABASES = {
-        'default': dj_database_url.config(default=os.environ.get('DATABASE_URL'), conn_max_age=600)
-    }
-elif DEBUG:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
-    }
-else:
-    DATABASES = {
-        'default': dj_database_url.config(default=os.environ.get('DATABASE_URL', 'postgres://postgres:postgres@localhost:5432/finance1'), conn_max_age=600)
-    }
+    DATABASES['default'] = dj_database_url.config(conn_max_age=600, ssl_require=True)
 
 # Password validation (simple for demo)
 AUTH_PASSWORD_VALIDATORS = []
