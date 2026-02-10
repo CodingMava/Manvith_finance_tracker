@@ -269,10 +269,32 @@ def debug_email_view(request):
         result += f"==> SUCCESS: Diagnostic email sent to {recipient}!\n"
         result += "Please check your INBOX (and SPAM folder)."
     except Exception as e:
-        import traceback
-        result += f"==> FAILURE: Error sending mail.\n"
-        result += f"ERROR MESSAGE: {str(e)}\n"
-        result += f"\nFULL TRACEBACK:\n{traceback.format_exc()}"
+        result += f"==> DJANGO SEND_MAIL FAILURE: {str(e)}\n"
+
+    # 3. Direct smtplib test (Low-level)
+    result += "\n3. DIRECT SMTPLIB TEST (Low-level):\n"
+    try:
+        import smtplib
+        host = settings.EMAIL_HOST
+        port = settings.EMAIL_PORT
+        result += f"Connecting to {host}:{port}...\n"
+        server = smtplib.SMTP(host, port, timeout=10)
+        result += "Connection established.\n"
+        
+        if settings.EMAIL_USE_TLS:
+            result += "Starting STARTTLS...\n"
+            server.starttls()
+            result += "TLS successful.\n"
+        
+        if user_env != 'Not Set' and pass_env != 'Not Set':
+            result += f"Attempting login for {mask(user_env)}...\n"
+            server.login(user_env, pass_env)
+            result += "Login successful!\n"
+        
+        server.quit()
+        result += "==> SMTPLIB: Raw connection works!\n"
+    except Exception as e:
+        result += f"==> SMTPLIB FAILURE: {str(e)}\n"
 
     return HttpResponse(result, content_type="text/plain")
 

@@ -7,7 +7,17 @@ from django.utils import timezone
 import logging
 from .models import Transaction, Budget
 
+from django.contrib.auth.models import User
+
 logger = logging.getLogger(__name__)
+
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        from .models import Profile
+        Profile.objects.get_or_create(user=instance)
+        logger.info(f"Automatically created profile for user: {instance.username}")
+
 print("DEBUG: apps.tracker.signals.py LOADED")
 
 @receiver(post_save, sender=Transaction)
