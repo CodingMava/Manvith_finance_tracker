@@ -66,6 +66,13 @@ def register(request):
 
 @login_required
 def profile_view(request):
+    profile = request.user.profile
+    if request.method == 'POST':
+        profile.notification_email = request.POST.get('notification_email')
+        profile.bio = request.POST.get('bio')
+        profile.target_savings = request.POST.get('target_savings') or 0
+        profile.save()
+        return redirect('profile')
     return render(request, "core/profile.html", {"user": request.user})
 
 def login_view(request):

@@ -10,6 +10,7 @@ from django.utils import timezone
 class Profile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     bio = models.TextField(blank=True)
+    notification_email = models.EmailField(blank=True, null=True, help_text="Email for budget notifications.")
     target_savings = models.DecimalField(max_digits=12, decimal_places=2, default=0, blank=True)
 
     def __str__(self):

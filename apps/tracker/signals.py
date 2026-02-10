@@ -38,7 +38,11 @@ def transaction_saved(sender, instance, created, **kwargs):
         print(f"SIGNAL: Spent: {total_expenses}, Limit: {budget.amount}")
 
         if total_expenses > budget.amount:
-            if user.email:
+            # Use profile email if set, otherwise fallback to registration email
+            profile = getattr(user, 'profile', None)
+            recipient = profile.notification_email if profile and profile.notification_email else user.email
+            
+            if recipient:
                 subject = f"Budget Exceeded Alert: {category.name}"
                 message = f"Warning! You have exceeded your budget for {category.name} ({currency}).\n\nLimit: {budget.amount}\nSpent: {total_expenses}"
                 
@@ -56,10 +60,10 @@ def transaction_saved(sender, instance, created, **kwargs):
                 import threading
                 email_thread = threading.Thread(
                     target=send_email_async,
-                    args=(subject, message, settings.DEFAULT_FROM_EMAIL, user.email)
+                    args=(subject, message, settings.DEFAULT_FROM_EMAIL, recipient)
                 )
                 email_thread.daemon = True
                 email_thread.start()
-                logger.info(f"Budget threshold hit. Started background thread for email to {user.email}")
+                logger.info(f"Budget threshold hit. Started background thread for email to {recipient}")
             else:
                 logger.warning(f"User {user.username} has no email address set for budget signal.")

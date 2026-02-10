@@ -22,13 +22,14 @@ def fix_site_and_app(apps, schema_editor):
     secret = os.environ.get('GOOGLE_OAUTH_CLIENT_SECRET')
     
     if client_id and secret:
-        app, _ = SocialApp.objects.update_or_create(
+        # Avoid MultipleObjectsReturned by starting fresh
+        SocialApp.objects.filter(provider='google').delete()
+        
+        app = SocialApp.objects.create(
             provider='google',
-            defaults={
-                'name': 'Google',
-                'client_id': client_id,
-                'secret': secret,
-            }
+            name='Google',
+            client_id=client_id,
+            secret=secret,
         )
         app.sites.add(site)
 

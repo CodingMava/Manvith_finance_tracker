@@ -19,13 +19,14 @@ def ensure_site_and_app(apps, schema_editor):
     secret = os.environ.get('GOOGLE_OAUTH_CLIENT_SECRET')
     
     if client_id and secret:
-        app, created = SocialApp.objects.update_or_create(
+        # Delete ANY existing google apps to start fresh and avoid MultipleObjectsReturned
+        SocialApp.objects.filter(provider='google').delete()
+        
+        app = SocialApp.objects.create(
             provider='google',
-            defaults={
-                'name': 'Google',
-                'client_id': client_id,
-                'secret': secret,
-            }
+            name='Google',
+            client_id=client_id,
+            secret=secret,
         )
         app.sites.add(site)
 

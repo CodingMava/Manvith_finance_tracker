@@ -8,9 +8,13 @@
     <h3>Settings</h3>
     <form method="post">
         {% csrf_token %}
+        <label for="id_notification_email">Notification Email (for budget alerts):</label>
+        <input type="email" name="notification_email" id="id_notification_email" placeholder="e.g. notify@example.com"
+            value="{{ user.profile.notification_email|default:'' }}" style="width: 100%; margin-bottom: 1rem;">
+
         <label for="id_target_savings">Target Savings:</label>
         <input type="number" step="0.01" name="target_savings" id="id_target_savings"
-            value="{{ user.profile.target_savings }}">
+            value="{{ user.profile.target_savings|default:'0' }}">
 
         <label for="id_bio">Bio:</label>
         <textarea name="bio" id="id_bio"
