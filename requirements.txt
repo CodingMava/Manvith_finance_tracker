@@ -7,3 +7,4 @@ whitenoise
 Pillow
 django-allauth
 python-dotenv
+requests
