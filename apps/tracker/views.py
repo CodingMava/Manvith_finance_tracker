@@ -219,46 +219,60 @@ def debug_email_view(request):
     """
     Diagnostic view to test email sending directly from the browser.
     """
-    if not request.user.is_staff and not request.user.username == 'manvith':
-        return HttpResponse("Unauthorized", status=403)
+    # Relaxed permission for debugging session
+    if not (request.user.is_staff or request.user.username in ['manvith', 'Manvith']):
+         return HttpResponse(f"Unauthorized. You are logged in as: {request.user.username}", status=403)
 
     recipient = request.user.email
     if not recipient:
-        return HttpResponse("No email set for this user.")
+        return HttpResponse(f"No email set for user {request.user.username}. Please add an email in the profile/admin.")
 
-    subject = "Production SMTP Diagnostic"
-    message = f"This is a diagnostic email from your live site to verify SMTP settings.\n\nSent to: {recipient}"
+    subject = "Production SMTP Diagnostic (Ver 2)"
+    message = f"This is a diagnostic email from your live site.\n\nSent to: {recipient}\nTime: {timezone.now()}"
     
-    result = "Diagnostic Results:\n\n"
+    result = "=== SMTP DIAGNOSTIC RESULTS ===\n\n"
     
-    # 1. Check Data Settings
+    # 1. Environment Check
     db_url = os.environ.get('DATABASE_URL', 'Not Found')
-    is_debug = settings.DEBUG
     user_env = os.environ.get('EMAIL_HOST_USER', 'Not Set')
     pass_env = os.environ.get('EMAIL_HOST_PASSWORD', 'Not Set')
     
-    # Masking for safety
     def mask(s):
         if s == 'Not Set': return s
-        if len(s) < 4: return "***"
-        return f"{s[:2]}...{s[-2:]}"
+        if len(s) < 6: return "***"
+        return f"{s[:3]}...{s[-3:]}"
 
-    result += f"- DJANGO_DEBUG: {is_debug}\n"
-    result += f"- DATABASE_URL present: {'Yes' if db_url != 'Not Found' else 'No'}\n"
+    result += f"1. ENVIRONMENT CONFIG:\n"
+    result += f"- DJANGO_DEBUG: {settings.DEBUG}\n"
+    result += f"- DATABASE_URL present: {'Yes' (db_url[:10] + '...') if db_url != 'Not Found' else 'No'}\n"
     result += f"- EMAIL_HOST_USER: {mask(user_env)}\n"
-    result += f"- EMAIL_HOST_PASSWORD: {mask(pass_env)}\n"
+    result += f"- EMAIL_HOST_PASSWORD: {mask(pass_env)} (Should be 16 chars for Gmail App Password)\n"
+    result += f"- EMAIL_HOST_PASSWORD Length: {len(pass_env) if pass_env != 'Not Set' else 0}\n"
     result += f"- settings.EMAIL_HOST: {settings.EMAIL_HOST}\n"
-    result += f"- settings.EMAIL_PORT: {settings.EMAIL_PORT}\n\n"
+    result += f"- settings.EMAIL_PORT: {settings.EMAIL_PORT}\n"
+    result += f"- settings.DEFAULT_FROM_EMAIL: {settings.DEFAULT_FROM_EMAIL}\n\n"
 
+    # 2. Connection Test
+    result += "2. ATTEMPTING SEND_MAIL:\n"
     try:
         import socket
-        socket.setdefaulttimeout(15) # 15 second timeout for diagnostics
+        socket.setdefaulttimeout(20) # Conservative timeout
         from django.core.mail import send_mail
-        send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [recipient], fail_silently=False)
-        result += f"SUCCESS: Diagnostic email sent to {recipient}!"
+        
+        send_mail(
+            subject, 
+            message, 
+            settings.DEFAULT_FROM_EMAIL, 
+            [recipient], 
+            fail_silently=False
+        )
+        result += f"==> SUCCESS: Diagnostic email sent to {recipient}!\n"
+        result += "Please check your INBOX (and SPAM folder)."
     except Exception as e:
         import traceback
-        result += f"FAILURE: SMTP Error occurred:\n{str(e)}\n\nTraceback:\n{traceback.format_exc()}"
+        result += f"==> FAILURE: Error sending mail.\n"
+        result += f"ERROR MESSAGE: {str(e)}\n"
+        result += f"\nFULL TRACEBACK:\n{traceback.format_exc()}"
 
     return HttpResponse(result, content_type="text/plain")
 
