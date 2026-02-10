@@ -209,5 +209,40 @@ def report_view(request):
         'report_json': json.dumps(sorted_reports, default=str),
         'category_json': json.dumps(category_list_data),
     }
-    return render(request, 'tracker/reports.html', context)
+
+from django.http import HttpResponse
+
+@login_required
+def debug_email_view(request):
+    """
+    Diagnostic view to test email sending directly from the browser.
+    """
+    if not request.user.is_staff and not request.user.username == 'manvith':
+        return HttpResponse("Unauthorized", status=403)
+
+    recipient = request.user.email
+    if not recipient:
+        return HttpResponse("No email set for this user.")
+
+    subject = "Production SMTP Diagnostic"
+    message = f"This is a diagnostic email from your live site to verify SMTP settings.\n\nSent to: {recipient}"
+    
+    result = "Diagnostic Results:\n\n"
+    
+    # 1. Check Data Settings
+    db_url = os.environ.get('DATABASE_URL', 'Not Found')
+    is_debug = settings.DEBUG
+    result += f"- DJANGO_DEBUG: {is_debug}\n"
+    result += f"- DATABASE_URL present: {'Yes' if db_url != 'Not Found' else 'No'}\n"
+    result += f"- Email Host: {settings.EMAIL_HOST}\n\n"
+
+    try:
+        from django.core.mail import send_mail
+        send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [recipient], fail_silently=False)
+        result += f"SUCCESS: Diagnostic email sent to {recipient}!"
+    except Exception as e:
+        import traceback
+        result += f"FAILURE: SMTP Error occurred:\n{str(e)}\n\nTraceback:\n{traceback.format_exc()}"
+
+    return HttpResponse(result, content_type="text/plain")
 

@@ -42,8 +42,9 @@ def transaction_saved(sender, instance, created, **kwargs):
                 subject = f"Budget Exceeded Alert: {category.name}"
                 message = f"Warning! You have exceeded your budget for {category.name} ({currency}).\n\nLimit: {budget.amount}\nSpent: {total_expenses}"
                 try:
-                    logger.info(f"Sending signal-based budget email to {user.email}")
+                    logger.info(f"Budget threshold hit. Attempting to send email from {settings.DEFAULT_FROM_EMAIL} to {user.email}")
                     send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email], fail_silently=False)
+                    logger.info(f"SIGNAL SUCCESS: Budget alert email sent to {user.email}")
                     print(f"SIGNAL: Email sent to {user.email}")
                 except Exception as e:
                     logger.error(f"Failed to send budget email in signal: {e}", exc_info=True)
