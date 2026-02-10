@@ -232,9 +232,21 @@ def debug_email_view(request):
     # 1. Check Data Settings
     db_url = os.environ.get('DATABASE_URL', 'Not Found')
     is_debug = settings.DEBUG
+    user_env = os.environ.get('EMAIL_HOST_USER', 'Not Set')
+    pass_env = os.environ.get('EMAIL_HOST_PASSWORD', 'Not Set')
+    
+    # Masking for safety
+    def mask(s):
+        if s == 'Not Set': return s
+        if len(s) < 4: return "***"
+        return f"{s[:2]}...{s[-2:]}"
+
     result += f"- DJANGO_DEBUG: {is_debug}\n"
     result += f"- DATABASE_URL present: {'Yes' if db_url != 'Not Found' else 'No'}\n"
-    result += f"- Email Host: {settings.EMAIL_HOST}\n\n"
+    result += f"- EMAIL_HOST_USER: {mask(user_env)}\n"
+    result += f"- EMAIL_HOST_PASSWORD: {mask(pass_env)}\n"
+    result += f"- settings.EMAIL_HOST: {settings.EMAIL_HOST}\n"
+    result += f"- settings.EMAIL_PORT: {settings.EMAIL_PORT}\n\n"
 
     try:
         import socket
