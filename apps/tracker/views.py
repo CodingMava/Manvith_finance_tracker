@@ -250,6 +250,8 @@ def debug_email_view(request):
     result += f"- EMAIL_HOST_PASSWORD Length: {len(pass_env) if pass_env != 'Not Set' else 0}\n"
     result += f"- settings.EMAIL_HOST: {settings.EMAIL_HOST}\n"
     result += f"- settings.EMAIL_PORT: {settings.EMAIL_PORT}\n"
+    result += f"- settings.EMAIL_USE_TLS: {settings.EMAIL_USE_TLS}\n"
+    result += f"- settings.EMAIL_USE_SSL: {getattr(settings, 'EMAIL_USE_SSL', False)}\n"
     result += f"- settings.DEFAULT_FROM_EMAIL: {settings.DEFAULT_FROM_EMAIL}\n\n"
 
     # 2. Connection Test
@@ -278,10 +280,16 @@ def debug_email_view(request):
         host = settings.EMAIL_HOST
         port = settings.EMAIL_PORT
         result += f"Connecting to {host}:{port}...\n"
-        server = smtplib.SMTP(host, port, timeout=10)
+        
+        if getattr(settings, 'EMAIL_USE_SSL', False):
+            result += "Using SMTP_SSL...\n"
+            server = smtplib.SMTP_SSL(host, port, timeout=10)
+        else:
+            server = smtplib.SMTP(host, port, timeout=10)
+        
         result += "Connection established.\n"
         
-        if settings.EMAIL_USE_TLS:
+        if settings.EMAIL_USE_TLS and not getattr(settings, 'EMAIL_USE_SSL', False):
             result += "Starting STARTTLS...\n"
             server.starttls()
             result += "TLS successful.\n"
