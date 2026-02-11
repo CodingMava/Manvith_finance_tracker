@@ -44,8 +44,7 @@ def transaction_saved(sender, instance, created, **kwargs):
         ).aggregate(Sum('amount'))['amount__sum'] or 0
         
         # Diagnostic logging
-        print(f"SIGNAL: Checking budget for {user.username} - {category.name}")
-        print(f"SIGNAL: Spent: {total_expenses}, Limit: {budget.amount}")
+        logger.info(f"SIGNAL: Checking budget for {user.username} - {category.name} (Spent: {total_expenses}, Limit: {budget.amount})")
 
         if total_expenses > budget.amount:
             # Use profile email if set, otherwise fallback to registration email
@@ -74,6 +73,8 @@ def transaction_saved(sender, instance, created, **kwargs):
                 )
                 email_thread.daemon = True
                 email_thread.start()
-                logger.info(f"Budget threshold hit. Started background thread for email to {recipient}")
+                logger.info(f"Budget threshold hit for {user.username} - {category.name}. Started background thread for email to {recipient}")
             else:
                 logger.warning(f"User {user.username} has no email address set for budget signal.")
+        else:
+             logger.info(f"SIGNAL: Budget NOT exceeded for {user.username} - {category.name} (Spent: {total_expenses}, Limit: {budget.amount})")
